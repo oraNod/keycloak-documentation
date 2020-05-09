@@ -1,0 +1,27 @@
+
+[[_command-options]]
+=== Command options for managing custom resources
+
+After you create a custom request, you can edit it or delete using the `oc` command.
+
+* To edit a custom request, use this command: `oc edit <cr-name>`
+* To delete a custom request, use this command: `oc delete <cr-name>`
+
+For example, to edit a realm custom request named `test-realm`, used this command:
+
+[source,bash,subs=+attributes]
+----
+$ oc edit test-realm
+----
+
+A window appears where you can make changes. For example, you might change the name `arealm` to `demo-realm`.
+
+.Sample code for a custom resource
+image:images/cr-code.png[]
+
+[NOTE]
+You can update the YAML file and changes appear in the {project_name} admin console, however changes to the admin console do not update the custom resource.
+
+.Additional Resources
+
+For more information on OpenShift, see the link:https://docs.openshift.com/container-platform/4.2/operators/olm-what-operators-are.html[OpenShift Operators guide].

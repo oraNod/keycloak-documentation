@@ -1,14 +1,47 @@
 
-=== Keycloak Custom Resource
+[[_keycloak_cr]]
+=== Installation using a Keycloak custom resource 
 
-The {project_operator} allows users to manage {project_name} clusters by using Keycloak Custom Resources:
+You can use the Operator to automate the installation of {project_name} as defined by a Keycloak custom resource. By installing {project_name} using a custom resource, you create the components and services that are described here and illustrated in the graphic that follows.
 
-.`Keycloak` Custom Resource
+* `keycloak-db-secret` - Stores properties such as the database username, password, and external address (if you connect to an external database)
+* `credentials-<CR-Name>` - Admin username and password to log into the {project_name} admin console (the credential-<CR Name> is based on the Keycloak custom resource name)
+* `keycloak` - Keycloak deployment specification that is implemented as a StatefulSet and with high availability support
+* `keycloak-postgresql` - Starts a PostgreSQL database installation
+* `keycloak-discovery` Service - Performs `JDBC_PING` discovery
+* `keycloak` Service - Connects to {project_name} through HTTPS (HTTP is not supported)
+* `keycloak-postgresql` Service - Connects an internal and external, if used, database instance
+* `keycloak` Route - The URL for accessing the {project_name} admin console from OpenShift
+ifeval::[{project_community}==true]
+* `keycloak` Ingress - The URL for accessing the {project_name} admin console from Kubernetes
+endif::[]
+
+.How Operator components and services interact
+image:{project_images}/operator-components.png[]
+
+==== Keycloak custom resource
+
+You can use the Operator to manage {project_name} clusters by creating a Keycloak custom resource, which is defined in a YAML file.
+
+[NOTE]
+You can update the YAML file and the changes appear in the {project_name} admin console, however changes to the admin console do not update the custom resource.
+
+The `Keycloak` YAML file contains three properties. 
+
+* `instances` - controls the number of instances running in high availability mode.
+* `externalAccess` - if the `enabled` is `True`, the Operator creates a route for OpenShift
+ifeval::[{project_community}==true]
+ or an Ingress for Kubernetes
+endif::[]
+ for the {project_name} cluster.
+* `externalDatabase` - applies only if you want to connect an externally hosted database. That topic is covered in the <<_external_database,external database>> section of this guide.
+
+.Example YAML file for a Keycloak custom resource
 ```yaml
 apiVersion: keycloak.org/v1alpha1
 kind: Keycloak
 metadata:
-  name: example-keycloak
+  name: keycloak
   labels:
     app: sso
 spec:
@@ -17,14 +50,140 @@ spec:
     enabled: True
 ```
 
-The `Spec` contains three properties (two of them are listed above and the external database has been covered in the other paragraphs of this manual):
+ifeval::[{project_community}==true]
+=== Creating a Keycloak custom resource on Kubernetes
 
-* `instances` - controls the number of instances running in HA mode
-* `externalAccess` - if the `enabled` flag is set to `True`, depending on the types available in the cluster {project_operator} will create a Route or an Ingress for {project_name} cluster.
+On Kubernetes, you create an ingress, which is the IP address of the admin console, and find the secret, which holds the user name and password for that console.
 
-Once {project_operator} reconciles the Custom Resource, it reports the status back:
+.Prerequisites
 
-.`Keycloak` Custom Resource Status
+You have a YAML file for this custom resource.
+
+.Procedure 
+
+. Create the ingress using your YAML file. `oc create -f <filename>.yaml -n <namespace>`.  For example:
++
+[source,bash,subs=+attributes]
+----
+$ oc create -f keycloak.yaml -n keycloak
+westover.org/keycloak created
+----
++
+This command creates an ingress on Kubernetes.
+
+. Find the ingress: `oc get ingress -n <cr_name>`. For example:
++
+[source,bash,subs=+attributes]
+----
+$ oc get ingress -n keycloak
+NAME       HOSTS                 ADDRESS     PORTS   AGE
+keycloak   keycloak.redhat.com   192.0.2.0   80      3m
+----
+
+. Copy and paste the ADDRESS (the ingress) into a web browser.
++
+The {project_name} admin console login screen appears.
++
+.{project_name} admin console login screen
+image:images/login-empty.png[]
+
+. Locate the user name and password.
++
+[source,bash,subs=+attributes]
+----
+$ oc get secret credentials-<CR-Name> -o go-template='{{range $k,$v := .data}}{{printf "%s: " $k}}{{if not $v}}{{$v}}{{else}}{{$v | base64decode}}{{end}}{{"\n"}}{{end}}'
+----
+
+. Copy and paste the user name and password into the admin console login screen.
++
+.{project_name} admin console login screen
+image:images/login-complete.png[]
++
+You are now logged into an instance of {project_name} that was installed by a Keycloak custom resource.
++
+.Admin console master realm
+image:images/new_install_cr.png[]
+
+. Check the status of the custom resource.
+
+[source,bash,subs=+attributes]
+----
+$ oc describe keycloak <cr_name>
+----
+
+endif::[]
+==== Creating a Keycloak custom resource on OpenShift
+
+On OpenShift, you create a route, which is the URL of the admin console, and find the secret, which holds the user name and password for the admin console.
+
+.Prerequisites
+
+You have a YAML file for this custom resource.
+
+.Procedure 
+
+. Create a route using your YAML file. `oc create -f <filename>.yaml -n <namespace>`. For example:
++
+[source,bash,subs=+attributes]
+----
+ifeval::[{project_community}==true]
+$ oc create -f keycloak.yaml -n keycloak
+westover.org/keycloak created
+endif::[]
+ifeval::[{project_product}==true]
+$ oc create -f sso.yaml -n sso
+westover.org/sso created
+endif::[]
+----
++
+A route is created in OpenShift.
+
+. Check that the {project_name} container is ready.
++
+[source,bash,subs=+attributes]
+----
+$ oc describe keycloak <cr_name>
+----
+
+. Log into the OpenShift web console.
+
+. Select `Networking`, `Route` and search for Keycloak. 
++
+.Routes screen in OpenShift web console
+image:images/route-ocp.png[]
+
+. On the screen with the Keycloak route, click the URL under `Location`.
++
+The {project_name} admin console login screen appears.
++
+.{project_name} admin console login screen
+image:images/login-empty.png[]
+
+. Locate the user name and password for the admin console in the OpenShift web console; under `Workloads`, click `Secrets` and search for Keycloak.
++
+.Secrets screen in OpenShift web console
+image:images/secrets-ocp.png[]
+
+. Copy and paste the user name and password into the admin console login screen.
++
+.{project_name} admin console login screen
+image:images/login-complete.png[]
++
+You are now logged into an instance of {project_name} that was installed by a Keycloak custom resource.
++
+.{project_name} master realm
+image:images/new_install_cr.png[]
+
+.Results
+
+After the Operator processes the custom resource, view the status with this command:
+
+[source,bash,subs=+attributes]
+----
+$ oc describe keycloak <cr_name>
+----
+
+.Keycloak custom resource Status
 ```yaml
 Name:         example-keycloak
 Namespace:    keycloak
@@ -65,3 +224,7 @@ Status:
   Version:
 Events:
 ```
+
+.Additional resources
+
+See  <<_external_database,Connecting to an external database>>.

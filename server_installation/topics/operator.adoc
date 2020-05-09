@@ -2,13 +2,27 @@
 [[_operator]]
 == {project_operator}
 
-{project_operator} has been designed to automate {project_name} administration in Kubernetes/OpenShift cluster.
-It allows you to:
+:tech_feature_name: The {project_name} Operator
+:tech_feature_disabled: false
+include::templates/techpreview.adoc[]
 
-* Install Keycloak to a namespace
-* Import Keycloak Realms
-* Import Keycloak Clients
-* Import Keycloak Users
-* Create scheduled backups of the database
-* Install Extensions
+The {project_operator} automates {project_name} administration in
+ifeval::[{project_community}==true]
+Kubernetes or
+endif::[]
+Openshift. You use this Operator to create custom resources (CRs), which automate administrative tasks. For example, instead of creating a client or a user in the {project_name} admin console, you can create custom resources to perform those tasks. A custom resource is a YAML file that defines the parameters for the administrative task.
 
+You can create custom resources to perform the following tasks:
+
+* <<_keycloak_cr,Install {project_name} using a Keycloak custom resource>>
+* <<_realm-cr,Create realms>>
+* <<_client-cr,Create clients>>
+* <<_user-cr,Create users>>
+* <<_external_database,Connect to an external database>>
+* <<_backup-cr,Create scheduled backups of the database>>
+* <<_operator-extensions,Install extensions and themes for use by {project_name}>>
+
+[NOTE]
+After you create custom resources for realms, clients, and users, you can manage them by the {project_name} admin console or as custom resources using the `oc` command.  However, you cannot use both methods, because the Operator performs a one way sync for custom resources that you modify.  For example, if you modify a realm custom resource, the changes show up in the admin console. However, if you modify the realm using the admin console, those changes have no effect on the custom resource.
+
+Begin using the Operator by <<_installing-operator,Installing the {project_operator} into a cluster>>.

@@ -1,68 +1,147 @@
 
-=== Installing {project_operator} into OpenShift cluster
+[[_installing-operator]]
+=== Installing the {project_operator} into a cluster
 
-There are two ways of running {project_operator} in Kubernetes/OpenShift cluster:
+To install the {project_operator} into 
+ifeval::[{project_community}==true]
+a Kubernetes cluster or
+endif::[]
+an Openshift cluster, you have two options:
 
-* Using Operator Lifecycle Manager (OLM)
-* Running manually
+* <<_install_by_olm,The Operator Lifecycle Manager (OLM)>> 
+* <<_install_by_command,Command line installation>> 
 
-==== Using Operator Lifecycle Manager
+[[_install_by_olm]]
+==== Installing using Operator Lifecycle Manager
 
-In case of a newly installed OpenShift 4.x cluster, {project_operator} should already be available in
-OperatorHub tab of the OpenShift administration panel (as shown in the image below).
+ifeval::[{project_community}==true]
+You can install the Operator on OpenShift or Kubernetes.
 
+===== Installation on an OpenShift cluster
+endif::[]
+
+.Prerequisites
+
+You have cluster administrator permissions or an equivalent level of permissions granted by an administrator.
+
+.Procedure
+
+For an OpenShift 4.3 cluster, perform these steps.
+
+. Open the OpenShift Container Platform web console.
+
+. In the left column, click `Operators, OperatorHub`.
+
+. Search for {project_name} Operator.
++
+.OperatorHub tab in OpenShift
 image:{project_images}/operator-openshift-operatorhub.png[]
 
-If {project_operator} is not available, please navigate to https://operatorhub.io/operator/keycloak-operator, click `Install` button and follow the instructions on screen.
-
-image:{project_images}/operator-operatorhub-install.png[]
-
-TIP: For Kubernetes installation, please follow link:https://github.com/operator-framework/operator-lifecycle-manager/blob/master/doc/install/install.md[Operator Lifecycle Manager Installation Guide]
-
-Once {project_operator} is available in your cluster, click `Install` button and follow the instruction on
-screen.
-
+. Click the {project_name} Operator icon.
++
+An Install page opens.
++
+.Operator Install page on OpenShift
 image:{project_images}/operator-olm-installation.png[]
 
-For more information, navigate to link:https://docs.openshift.com/container-platform/4.2/operators/olm-what-operators-are.html[OpenShift Operators guide].
+. Click `Install`.
 
-==== Running manually
+. Select a namespace and click Subscribe.
++
+.Namespace selection in OpenShift
+image:images/installed-namespace.png[]
++
+The Operator starts installing.
 
-It is possible to run {project_operator} without Operator Lifecycle Manager. This requires running several
-steps manually from link:{operatorRepo_link}[Github repo]:
+When the Operator installation completes, you are ready to create custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
 
-* Install all required Custom Resource Definitions by using the following command:
+ifeval::[{project_community}==true]
 
-```bash
-kubectl apply -f deploy/crds/
-```
+===== Installation on a Kubernetes cluster
 
-* Create a new namespace (or reuse an existing one). For this example, we'll be using namespace `myproject`.
+.Prerequisites
 
-```bash
-kubectl create namespace myproject
-```
+You have cluster administrator permissions or an equivalent level of permissions granted by an administrator.
 
-* Deploy Role, Role Binding and a Service Account for {project_operator}.
+.Procedure
 
-```bash
-kubectl apply -f deploy/role.yaml -n myproject
-kubectl apply -f deploy/role_binding.yaml -n myproject
-kubectl apply -f deploy/service_account.yaml -n myproject
-```
+For a Kubernetes cluster, perform these steps.
 
-* Deploy {project_operator}
+. Go to link:https://operatorhub.io/operator/keycloak-operator[Keycloak Operator on OperatorHub.io].
 
-```bash
-kubectl apply -f deploy/operator.yaml -n myproject
-```
+. Click `Install`.
 
-* Validate if {project_operator} is running
+. Follow the instructions on the screen.
++
+.Operator Install page on Kubernetes
+image:{project_images}/operator-operatorhub-install.png[]
 
-```bash
-kubectl get deployment keycloak-operator
+When the Operator installation completes, you are ready to create custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
+endif::[]
+
+.Additional Resources
+
+ifeval::[{project_community}==true]
+For more information on a Kubernetes installation, see link:https://operatorhub.io/how-to-install-an-operator[How to install an Operator from OperatorHub.io].
+endif::[]
+
+For more information on OpenShift Operators, see the link:https://docs.openshift.com/container-platform/4.2/operators/olm-what-operators-are.html[OpenShift Operators guide].
+
+For more information on OpenShift installation, see link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.3/html/installing/indexl[Installing and Configuring OpenShift Container Platform custers].
+
+[[_install_by_command]]
+==== Installing from the command line
+
+You can install the {project_operator} at the command line.
+
+.Prerequisites
+
+You have cluster administrator permissions or an equivalent level of permissions granted by an administrator.
+
+.Procedure
+
+. Access the software by using the link:{operatorRepo_link}[Github repo].
+
+. Install all required custom resource Definitions.
++
+[source,bash,subs=+attributes]
+----
+$ oc create -f deploy/crds/
+----
+
+. Create a new namespace (or reuse an existing one). In this example, the namespace is `myproject`.
++
+[source,bash,subs=+attributes]
+----
+$ oc create namespace myproject
+----
+
+. Deploy a role, role binding, and service account for the Operator.
++
+[source,bash,subs=+attributes]
+----
+$ oc create -f deploy/role.yaml -n myproject
+$ oc create -f deploy/role_binding.yaml -n myproject
+$ oc create -f deploy/service_account.yaml -n myproject
+----
+
+. Deploy the Operator.
++
+[source,bash,subs=+attributes]
+----
+$ oc create -f deploy/operator.yaml -n myproject
+----
+
+. Confirm that the Operator is running;
++
+[source,bash,subs=+attributes]
+----
+$ oc get deployment keycloak-operator
 NAME                READY   UP-TO-DATE   AVAILABLE   AGE
 keycloak-operator   1/1     1            1           41s
-```
+----
 
-TIP: When deploying {project_operator} to an OpenShift cluster, `kubectl apply` commands can be replaced with their `oc create` counterparts.
+You are ready to create custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
+
+[NOTE]
+When deploying the Operator to an OpenShift cluster, `oc create` commands can be replaced with their `kubectl apply` counterparts.

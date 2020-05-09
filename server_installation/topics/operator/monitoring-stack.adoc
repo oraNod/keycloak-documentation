@@ -1,31 +1,40 @@
 
-=== Monitoring Stack
+=== Viewing performance metrics
 
-{project_operator} integrates with {application_monitoring_operator} providing Graphana Dashboard and Prometheus Alerts. The integration is seamless and doesn't require any action from the user. However, {application_monitoring_operator} needs to be properly installed in the cluster.
+The {project_operator} integrates with the {application_monitoring_operator}, which provides access to the Grafana Dashboard and Prometheus Alerts. You can view metrics such as the number of controller runtime reconciliation loops, the reconcile loop time, and errors.
 
-==== Installing {application_monitoring_operator}
+The integration is seamless and requires no action to be set up. You do not need to configure integration with Grafana, but you must install the {application_monitoring_operator} in the cluster.
 
-Prior to running {project_operator} it is recommended to install {application_monitoring_operator} by following the link:{application_monitoring_operator_installation_link}[documentation]. After {application_monitoring_operator} is up and running, you need to annotate the namespace used for {project_operator} installation. Here's an example:
+.Prerequisite
 
-.Annotating namespace for monitoring
-```bash
+The {project_operator} is installed.
+
+.Procedure
+
+. Install the {application_monitoring_operator} using the link:{application_monitoring_operator_installation_link}[documentation].
+
+. Annotate the namespace used for the {project_operator} installation. For example:
++
+[source,bash,subs=+attributes]
+----
 oc label namespace <namespace> monitoring-key=middleware
-```
+----
 
-Once the {application_monitoring_operator} is installed and running, also the corresponding namespace is annotated for monitoring, you can search for Prometheus and Graphana route in `application-monitoring` namespace:
-
+. Confirm monitoring is working by searching for Prometheus and Grafana route in `application-monitoring` namespace:
++
 image:{project_images}/operator-application-monitoring-routes.png[]
 
-==== Graphana Dashboard
+==== Grafana Dashboard
 
-{project_operator} installs a pre-defined Graphana Dashboard. Here's how it looks like:
+The Operator installs a pre-defined Grafana Dashboard as shown here:
 
 image:{project_images}/operator-graphana-dashboard.png[]
 
-NOTE: Graphana Dashboard is likely to be changed in future releases. If you need any customizations, please clone it and adjust to your needs.
+[NOTE]
+The Grafana Dashboard is likely to change at future releases. If you need any customizations, please clone it and adjust to your needs.
 
 ==== Prometheus Alerts
 
-{project_operator} installs a set of pre-defined Prometheus Alerts. Here's how they look like:
+The Operator installs a set of pre-defined Prometheus Alerts as shown here:
 
 image:{project_images}/operator-prometheus-alerts.png[]
