@@ -1,4 +1,5 @@
-
+//dnaro: perhaps a more descriptive title?
+//Using {project_operator} to create and manage Keycloak clusters
 [[_operator]]
 == {project_operator}
 
@@ -6,12 +7,17 @@
 :tech_feature_disabled: false
 include::templates/techpreview.adoc[]
 
-The {project_operator} automates {project_name} administration in
+//dnaro: I believe it is the standard to not precede operator names with articles
+//just use "{project_operator}", not "the {project_operator}"
+//in the same way that you would say "Red Hat SSO" instead of "The Red Hat SSO"
+{project_operator} automates {project_name} administration tasks in
 ifeval::[{project_community}==true]
 Kubernetes or
 endif::[]
-Openshift. You use this Operator to create custom resources (CRs), which automate administrative tasks. For example, instead of creating a client or a user in the {project_name} admin console, you can create custom resources to perform those tasks. A custom resource is a YAML file that defines the parameters for the administrative task.
+OpenShift. You use this Operator to create custom resources (CRs), which automate administrative tasks. For example, instead of creating a client or a user in the {project_name} admin console, you can create custom resources to perform those tasks. A custom resource is a YAML file that defines the parameters for the administrative task.
 
+//dnaro: would remove these TOC links. they are unnecessary.
+//I also skipped the entire Installing Keycloak Operator section because Keycloak CR is the first link you see when you open this topic
 You can create custom resources to perform the following tasks:
 
 * <<_keycloak_cr,Install {project_name} using a Keycloak custom resource>>
@@ -22,7 +28,12 @@ You can create custom resources to perform the following tasks:
 * <<_backup-cr,Create scheduled backups of the database>>
 * <<_operator-extensions,Install extensions and themes for use by {project_name}>>
 
+//dnaro: add "====" to follow convention for admonitions
+// the note is confusing. if you have a CR defined in yaml and you make some changes, the Keycloak admin console reflects those changes. but if you modify something via the Keycloak admin console, it doesn't update your yaml?
 [NOTE]
+====
 After you create custom resources for realms, clients, and users, you can manage them by the {project_name} admin console or as custom resources using the `oc` command.  However, you cannot use both methods, because the Operator performs a one way sync for custom resources that you modify.  For example, if you modify a realm custom resource, the changes show up in the admin console. However, if you modify the realm using the admin console, those changes have no effect on the custom resource.
+====
 
+//dnaro: this sentence is superfluous
 Begin using the Operator by <<_installing-operator,Installing the {project_operator} into a cluster>>.
