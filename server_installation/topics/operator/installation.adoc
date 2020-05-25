@@ -1,18 +1,23 @@
 
 [[_installing-operator]]
-=== Installing the {project_operator} into a cluster
+=== Installing {project_operator}
 
-To install the {project_operator} into 
+To install the {project_operator} into
 ifeval::[{project_community}==true]
 a Kubernetes cluster or
 endif::[]
 an Openshift cluster, you have two options:
 
-* <<_install_by_olm,The Operator Lifecycle Manager (OLM)>> 
-* <<_install_by_command,Command line installation>> 
+* <<_install_by_olm,The Operator Lifecycle Manager (OLM)>>
+* <<_install_by_command,Command line installation>>
+
+//dnaro: CLI is community only. for product you install via OLM only.
+//CCS convention for linking is to use the xref format.
+//<<_install_by_command,Command line installation>>
+//link:#_install_by_command[Command line installation]
 
 [[_install_by_olm]]
-==== Installing using Operator Lifecycle Manager
+==== Installing {project_operator} from Operator Lifecycle Manager
 
 ifeval::[{project_community}==true]
 You can install the Operator on OpenShift or Kubernetes.
@@ -26,11 +31,12 @@ You have cluster administrator permissions or an equivalent level of permissions
 
 .Procedure
 
-For an OpenShift 4.3 cluster, perform these steps.
+//dnaro: do not mention OS version here. that will get out of date quickly.
+For an OpenShift 4.3 cluster, perform these steps:
 
 . Open the OpenShift Container Platform web console.
 
-. In the left column, click `Operators, OperatorHub`.
+. In the left column, select `Operators, OperatorHub`.
 
 . Search for {project_name} Operator.
 +
@@ -46,14 +52,12 @@ image:{project_images}/operator-olm-installation.png[]
 
 . Click `Install`.
 
-. Select a namespace and click Subscribe.
+. Select a namespace and click `Subscribe`.
 +
 .Namespace selection in OpenShift
 image:images/installed-namespace.png[]
 +
 The Operator starts installing.
-
-When the Operator installation completes, you are ready to create custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
 
 ifeval::[{project_community}==true]
 
@@ -65,7 +69,7 @@ You have cluster administrator permissions or an equivalent level of permissions
 
 .Procedure
 
-For a Kubernetes cluster, perform these steps.
+For a Kubernetes cluster, perform these steps:
 
 . Go to link:https://operatorhub.io/operator/keycloak-operator[Keycloak Operator on OperatorHub.io].
 
@@ -76,22 +80,27 @@ For a Kubernetes cluster, perform these steps.
 .Operator Install page on Kubernetes
 image:{project_images}/operator-operatorhub-install.png[]
 
-When the Operator installation completes, you are ready to create custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
 endif::[]
+
+When the Operator installation completes, you can apply custom resources to install {project_name}, create realms, and perform other adminstrative tasks.
 
 .Additional Resources
 
 ifeval::[{project_community}==true]
-For more information on a Kubernetes installation, see link:https://operatorhub.io/how-to-install-an-operator[How to install an Operator from OperatorHub.io].
+* link:https://operatorhub.io/how-to-install-an-operator[How to install an Operator from OperatorHub.io]
 endif::[]
 
-For more information on OpenShift Operators, see the link:https://docs.openshift.com/container-platform/4.2/operators/olm-what-operators-are.html[OpenShift Operators guide].
+//dnaro: you mentioned 4.3 earlier but this link points to 4.2
+* link:https://docs.openshift.com/container-platform/4.2/operators/olm-what-operators-are.html[OpenShift Operators Guide]
 
-For more information on OpenShift installation, see link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.3/html/installing/indexl[Installing and Configuring OpenShift Container Platform custers].
+//dnaro: typo in the URL causes 404
+//think we can drop this link
+For more information on OpenShift installation, see link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.3/html/installing/index[Installing and Configuring OpenShift Container Platform clusters].
 
 [[_install_by_command]]
-==== Installing from the command line
+==== Installing {project_operator} manually
 
+//dnaro: this should be community only. for product you install via OLM only.
 You can install the {project_operator} at the command line.
 
 .Prerequisites
@@ -100,8 +109,13 @@ You have cluster administrator permissions or an equivalent level of permissions
 
 .Procedure
 
+//dnaro: clone the Keycloak repo?
 . Access the software by using the link:{operatorRepo_link}[Github repo].
 
+//dnaro: how does the user know which CRDs are required?
+//what is the order in which the CRDs should be installed?
+//why is "Definitions" in caps?
+//for community the commands should use the kubectl client, not the oc client
 . Install all required custom resource Definitions.
 +
 [source,bash,subs=+attributes]
@@ -132,7 +146,7 @@ $ oc create -f deploy/service_account.yaml -n myproject
 $ oc create -f deploy/operator.yaml -n myproject
 ----
 
-. Confirm that the Operator is running;
+. Confirm that the Operator is running:
 +
 [source,bash,subs=+attributes]
 ----
