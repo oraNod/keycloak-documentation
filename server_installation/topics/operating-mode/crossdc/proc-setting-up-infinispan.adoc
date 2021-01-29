@@ -36,10 +36,15 @@ keytool -genkey -alias server -keyalg RSA -keystore server.jks -keysize 2048
 keytool -exportcert -keystore server.jks -alias server -file server.crt
 ----
 +
-.. Import the SSL certificate into a truststore that {jdgserver_name} can use to verify the SSL identity for {jdgserver_name}.
+.. Import the SSL certificate into a truststore that {project_name} can use to verify the SSL identity for {jdgserver_name}.
 +
 [source,bash,options="nowrap",subs=attributes+]
 ----
 keytool -importcert -keystore truststore.jks -alias server -file server.crt
+----
+.. Remove `server.crt`.
++
+[source,bash,options="nowrap",subs=attributes+]
+----
 rm server.crt
 ----

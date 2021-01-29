@@ -122,8 +122,8 @@ $ bin/server.sh
 +
 [source,options="nowrap",subs=attributes+]
 ----
-INFO  [org.infinispan.XSITE] (jgroups-5,${server.hostname}) ISPN000439: Received new x-site view: [NYC]
-INFO  [org.infinispan.XSITE] (jgroups-7,${server.hostname}) ISPN000439: Received new x-site view: [NYC, LON]
+INFO  [org.infinispan.XSITE] (jgroups-5,${server.hostname}) ISPN000439: Received new x-site view: [site1]
+INFO  [org.infinispan.XSITE] (jgroups-7,${server.hostname}) ISPN000439: Received new x-site view: [site1, site2]
 ----
 
 ifeval::[{project_product}==true]
